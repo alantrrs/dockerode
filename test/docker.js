@@ -292,6 +292,21 @@ describe("#docker", function() {
       docker.run(testImage, ['bash', '-c', 'uname -a'], process.stdout, handler);
     });
 
+    it("should demux the streams", function(done) {
+      function handler(err, data, container) {
+        expect(err).to.be.null;
+        //container is created
+        expect(container).to.be.ok;
+
+        container.remove(function(err, data) {
+          expect(err).to.be.null;
+          done();
+        });
+      }
+
+      docker.run(testImage, ['bash', '-c', 'uname -a'], [process.stdout, process.stderr], {Tty: false} ,handler);
+    });
+
     it("should run a command with start options", function(done) {
       function handler(err, data, container) {
         expect(err).to.be.null;
